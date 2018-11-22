@@ -1,3 +1,14 @@
+###Directory Set up:
+setwd("~/Google Drive/LEARNING_DATA_SCIENCE/c3w4_project")
+directory<-path.expand("~/Google Drive/LEARNING_DATA_SCIENCE/c3w4_project")
+
+###Data collection:
+url<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+zipfile = paste(directory, "UCI-HAR-Dataset.zip", sep="/")
+download.file(url,zipfile, method = "curl")
+unzip(zipfile)
+
+
 ###Packages:
 library(dplyr)
 library(data.table)
@@ -13,18 +24,18 @@ library(reshape2)
 
 
 #Read features data
-features<-read.table("features.txt",header = FALSE)
+features<-read.table("./UCI HAR Dataset/features.txt",header = FALSE)
 features<-select(features,-V1)
 features<-dplyr::rename(features,featurenames=V2)
 
 #Read activities names:
-activity_labels<-read.table("activity_labels.txt",header = FALSE)
+activity_labels<-read.table("./UCI HAR Dataset/activity_labels.txt",header = FALSE)
 activity_labels<-dplyr::rename(activity_labels,number=V1,name=V2)
 activity_labels$name<-tolower(activity_labels$name)
 
 #Read the test data and labels
-test_data<-read.table("X_test.txt", header = FALSE, sep = "" )
-test_data_labels<-read.table("y_test.txt", header = FALSE, sep = "")
+test_data<-read.table("./UCI HAR Dataset/test/X_test.txt", header = FALSE, sep = "" )
+test_data_labels<-read.table("./UCI HAR Dataset/test/y_test.txt", header = FALSE, sep = "")
 colnames(test_data)<-features$featurenames
 
 test_data_labels$V1<-factor(test_data_labels$V1)
@@ -34,8 +45,8 @@ test_combined<-cbind(test_data_labels,test_data)
 
 
 #Read the train data and labels
-train_data<-read.table("X_train.txt", header = FALSE, sep = "" )
-train_data_labels<-read.table("y_train.txt", header = FALSE, sep = "")
+train_data<-read.table("./UCI HAR Dataset/train/X_train.txt", header = FALSE, sep = "" )
+train_data_labels<-read.table("./UCI HAR Dataset/train/y_train.txt", header = FALSE, sep = "")
 colnames(train_data)<-features$featurenames
 
 train_data_labels$V1<-factor(train_data_labels$V1) #Convert the activity variable to a factor
@@ -63,8 +74,8 @@ test_train_total$activity<-mapvalues(test_train_total$activity, c(1:6), activity
 tidy_dataset<-test_train_total #backup dataset for test_train_total
 
 #Add the subject identifiers to the tidy data set:
-subject_test<-read.table("subject_test.txt", header = FALSE, sep = "")
-subject_train<-read.table("subject_train.txt", header = FALSE, sep = "")
+subject_test<-read.table("./UCI HAR Dataset/test/subject_test.txt", header = FALSE, sep = "")
+subject_train<-read.table("./UCI HAR Dataset/train/subject_train.txt", header = FALSE, sep = "")
 subjects<-rbind(subject_test,subject_train)
 tidy_dataset<-cbind(subjects,tidy_dataset)
 tidy_dataset<-dplyr::rename(tidy_dataset, subject_names=V1)
